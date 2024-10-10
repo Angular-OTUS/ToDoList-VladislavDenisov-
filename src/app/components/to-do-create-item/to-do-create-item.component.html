@@ -1,0 +1,19 @@
+<form #formDirective="ngForm" [formGroup]="addItemForm" class="add-item-form" (ngSubmit)="onAddItemFormSubmit(formDirective)">
+    <mat-form-field class="add-item-form__formfield">
+        <input matInput [formControl]="addItemForm.controls.name" type="text" placeholder="Add your new todo" name="nameInput" />
+        @if (addItemForm.controls.name.hasError('required') || addItemForm.controls.name.hasError('whitespace')) {
+            <mat-error>Name is <strong>required</strong></mat-error>
+        }
+    </mat-form-field>
+    <mat-form-field class="add-item-form__formfield">
+        <textarea matInput [formControl]="addItemForm.controls.description" type="text" placeholder="Add description" name="descriptionInput"></textarea>
+    </mat-form-field>
+    <app-button 
+        type="submit"
+        class="button__positive"
+        appCustomTooltip="Add new todo item" 
+        [disabled]="addItemForm.controls.name.invalid"  
+    >
+        Add
+    </app-button>
+</form>

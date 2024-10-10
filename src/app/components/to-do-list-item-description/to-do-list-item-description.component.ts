@@ -10,5 +10,5 @@ import { ToDoListItem } from '../../services';
     styleUrl: './to-do-list-item-description.component.scss',
 })
 export class ToDoListItemDescriptionComponent {
-    @Input() public toDoListItem!: ToDoListItem;
+    @Input() public toDoListItem?: ToDoListItem;
 }

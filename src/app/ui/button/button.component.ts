@@ -11,7 +11,6 @@ import { ButtonType } from './button.component.types';
     styleUrl: './button.component.scss',
 })
 export class ButtonComponent extends MatButton {
-    @Input() public title = '';
     @Input() public buttonType: ButtonType = 'flat';
     @Input() public type = 'submit';
 

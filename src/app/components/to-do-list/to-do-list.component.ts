@@ -8,17 +8,18 @@ import {
     FormGroup,
     FormGroupDirective,
 } from '@angular/forms';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { ToDoListService } from '../../services';
-import { ToastService } from '../../services';
 import { ToDoListItemComponent } from '../to-do-list-item';
 import { noWhitespaceValidator } from '../../utils';
 import { ButtonComponent } from '../../ui';
 import { ToDoListItemDescriptionComponent } from '../to-do-list-item-description';
 import { SharedModule } from '../../modules';
+import { STATUS_OPTIONS } from '../../services/to-do-list-service/to-do-list.service.types';
+import { ALL_SELECT_OPTION } from './to-do-list.component.const';
+import { ToDoCreateItemComponent } from '../to-do-create-item';
 
 @Component({
     selector: 'app-to-do-list',
@@ -28,10 +29,10 @@ import { SharedModule } from '../../modules';
         FormsModule,
         ReactiveFormsModule,
         MatFormFieldModule,
-        MatButtonModule,
         MatInputModule,
-        MatProgressSpinnerModule,
+        MatSelectModule,
         ToDoListItemComponent,
+        ToDoCreateItemComponent,
         ToDoListItemDescriptionComponent,
         ButtonComponent,
         SharedModule,
@@ -40,44 +41,55 @@ import { SharedModule } from '../../modules';
     styleUrls: ['../../app.component.scss', './to-do-list.component.scss'],
 })
 export class ToDoListComponent implements OnInit {
-    private _isLoading = true;
     private _isEditing = false;
 
-    constructor(
-        private _toDoListService: ToDoListService,
-        private _toastService: ToastService,
-    ) {}
+    public itemSelectOptions = [ALL_SELECT_OPTION, ...Object.values(STATUS_OPTIONS)];
+    public selectedOption = this.itemSelectOptions[0];
 
-    public get isLoading() {
-        return this._isLoading;
-    }
+    constructor(private _toDoListService: ToDoListService) {}
 
     public get isEditing() {
         return this._isEditing;
-    }
-
-    public setIsLoading(isLoading: boolean) {
-        this._isLoading = isLoading;
-    }
-
-    public setIsEditing(isEditing: boolean) {
-        this._isEditing = isEditing;
     }
 
     public get toDoList() {
         return this._toDoListService.toDoList;
     }
 
+    public get isLoading() {
+        return this._toDoListService.isLoading;
+    }
+
+    public get filteredToDoList() {
+        if (this.selectedOption === ALL_SELECT_OPTION) {
+            return this.toDoList;
+        }
+        return this.toDoList.filter((item) => item.status === this.selectedOption);
+    }
+
     public get selectedItem() {
         return this._toDoListService.selectedItem;
     }
 
-    public getIsItemSelected(id: number) {
+    public getIsItemSelected(id: string) {
         return this._toDoListService.selectedItemId === id;
     }
 
-    public setSelectedItemId(id: number) {
+    public getIsItemChecked(id: string) {
+        const item = this._toDoListService.getItemById(id);
+        if (!item) {
+            return false;
+        }
+
+        return item.status === STATUS_OPTIONS.completed;
+    }
+
+    public setSelectedItemId(id: string) {
         this._toDoListService.setSelectedItemId(id);
+    }
+
+    public toggleItemStatus(id: string) {
+        this._toDoListService.toggleItemStatus(id);
     }
 
     public cancelEditing(formDirective: FormGroupDirective) {
@@ -85,45 +97,37 @@ export class ToDoListComponent implements OnInit {
         formDirective.resetForm();
     }
 
-    public deleteItem(id: number) {
+    public deleteItem(id: string) {
         this._toDoListService.deleteItem(id);
-        this._toastService.addToast('negative');
     }
-
-    public addItemForm = new FormGroup({
-        title: new FormControl('', [Validators.required, noWhitespaceValidator]),
-        description: new FormControl(''),
-    });
 
     public editItemForm = new FormGroup({
-        title: new FormControl('', [Validators.required, noWhitespaceValidator]),
+        name: new FormControl('', [Validators.required, noWhitespaceValidator]),
     });
 
-    public setEditItemFormDefaultValue() {
-        this.editItemForm.controls.title.patchValue(this.selectedItem?.title || '');
+    public setIsEditing(isEditing: boolean) {
+        this._isEditing = isEditing;
     }
 
-    public onAddItemFormSubmit(formDirective: FormGroupDirective) {
-        this._toDoListService.addItem({
-            title: this.addItemForm.value.title!,
-            description: this.addItemForm.value.description!,
-        });
-        this._toastService.addToast('positive');
-
-        formDirective.resetForm();
+    public setEditItemFormDefaultValue() {
+        this.editItemForm.controls.name.patchValue(this.selectedItem?.name || '');
     }
 
     public onEditItemFormSubmit(formDirective: FormGroupDirective) {
+        if (!this.editItemForm.value.name || !this.selectedItem?.id) {
+            return;
+        }
+
         this._toDoListService.patchItem({
-            title: this.editItemForm.value.title!,
+            id: this.selectedItem.id,
+            name: this.editItemForm.value.name,
         });
-        this._toastService.addToast('info');
 
         this.setIsEditing(false);
         formDirective.resetForm();
     }
 
     ngOnInit() {
-        setTimeout(() => this.setIsLoading(false), 1000);
+        this._toDoListService.getToDoList();
     }
 }

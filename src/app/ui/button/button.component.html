@@ -1,12 +1,15 @@
+<ng-template #button>
+    <ng-content/>
+</ng-template>
+
 @if (buttonType === 'flat') {
     <button mat-flat-button [disabled]="disabled" [type]="type" class="button" (click)="click($event)">
-        {{ title }}
+        <ng-container [ngTemplateOutlet]="button"></ng-container>
     </button>
 }
 
 @if (buttonType === 'stroked') {
     <button mat-stroked-button [disabled]="disabled" [type]="type" class="button" (click)="click($event)">
-        {{ title }}
+        <ng-container [ngTemplateOutlet]="button"></ng-container>
     </button>    
 }
-
