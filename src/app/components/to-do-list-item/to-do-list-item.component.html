@@ -1,6 +1,6 @@
-<li 
+<li
     [ngClass]="{'to-do-list-item': true, 'to-do-list-item--selected': isSelected}"
-    (click)="setSelectedItemId(item?.id)"
+    (click)="goToItem(item?.id)"
     (dblclick)="setIsEditing(true)">
 
     {{ item?.name }}

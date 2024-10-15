@@ -11,18 +11,14 @@ import { catchError, Observable, throwError } from 'rxjs';
 export class ToDoListService {
     private _api = inject(ApiService);
     private _toDoList: ToDoListItem[] = [];
-    private _selectedItemId: string | null = null;
     private _editedItemId: string | null = null;
     private _isLoading = false;
+    private _isEditing = false;
 
     constructor(private _toastService: ToastService) {}
 
     public get toDoList(): ToDoListItem[] {
         return this._toDoList;
-    }
-
-    public get selectedItemId() {
-        return this._selectedItemId;
     }
 
     public get editedItemId() {
@@ -33,20 +29,16 @@ export class ToDoListService {
         return this._isLoading;
     }
 
+    public get isEditing() {
+        return this._isEditing;
+    }
+
     public get itemIds(): string[] {
         return this._toDoList.map((item) => item.id);
     }
 
     public getItemById(id: string): ToDoListItem | undefined {
         return this._toDoList.find((item) => item.id === id);
-    }
-
-    public get selectedItem(): ToDoListItem | undefined {
-        if (!this.selectedItemId) {
-            return;
-        }
-
-        return this.getItemById(this.selectedItemId);
     }
 
     public get editedItem(): ToDoListItem | undefined {
@@ -65,8 +57,8 @@ export class ToDoListService {
         this._isLoading = isLoading;
     }
 
-    public setSelectedItemId(id: string) {
-        this._selectedItemId = id;
+    public setIsEditing(isEditing: boolean) {
+        this._isEditing = isEditing;
     }
 
     public setEditedItemId(id: string) {
@@ -75,10 +67,6 @@ export class ToDoListService {
 
     public setItemStatus(item: ToDoListItem, status: ToDoListItemStatus) {
         item.status = status;
-    }
-
-    public clearSelectedItemId() {
-        this._selectedItemId = null;
     }
 
     public clearEditedItemId() {
@@ -169,9 +157,6 @@ export class ToDoListService {
             .pipe(catchError(this.handleHttpError))
             .subscribe({
                 next: () => {
-                    if (this.selectedItemId === id) {
-                        this.clearSelectedItemId();
-                    }
                     this.setIsLoading(false);
                     this._toastService.addToast({
                         message: 'Todo was deleted!',

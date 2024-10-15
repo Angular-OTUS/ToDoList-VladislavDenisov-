@@ -1,0 +1,10 @@
+@if (isEditing) {
+    <app-to-do-edit-item
+        [toDoListItem]="getSelectedItem()"
+    ></app-to-do-edit-item>
+} @else {
+    <app-to-do-list-item-description
+        class="description"
+        [toDoListItem]="getSelectedItem()"
+    ></app-to-do-list-item-description>
+}

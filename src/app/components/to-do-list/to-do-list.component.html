@@ -24,52 +24,14 @@
                         [isSelected]="getIsItemSelected(toDoListItem.id)"
                         [isChecked]="getIsItemChecked(toDoListItem.id)"
                         (deleteItemEvent)="deleteItem($event)"
-                        (setSelectedItemIdEvent)="setSelectedItemId($event); setIsEditing(false)"
-                        (setIsEditingEvent)="setIsEditing($event); setEditItemFormDefaultValue()"
+                        (goToItemEvent)="goToItem($event)"
+                        (setIsEditingEvent)="setIsEditing($event);"
                         (toggleItemStatusEvent)="toggleItemStatus($event)"
                     ></app-to-do-list-item>
                 }
             </ul>
-            @if (selectedItem && !isEditing) {
-                <app-to-do-list-item-description
-                    class="task-list__description"
-                    [toDoListItem]="selectedItem"
-                ></app-to-do-list-item-description>
-            }
-            @if (selectedItem && isEditing) {
-                <form #formDirective="ngForm" [formGroup]="editItemForm" class="edit-item-form" (ngSubmit)="onEditItemFormSubmit(formDirective)">
-                    <mat-form-field>
-                        <input 
-                            matInput 
-                            type="text" 
-                            placeholder="New todo item name" 
-                            name="editName"
-                            [formControl]="editItemForm.controls.name"
-                        />
-                        @if (editItemForm.controls.name.hasError('required') || editItemForm.controls.name.hasError('whitespace')) {
-                            <mat-error>Name is <strong>required</strong></mat-error>
-                        }
-                    </mat-form-field>
-                    <div class="edit-item-form__button-group">
-                        <app-button
-                            type="button"
-                            appCustomTooltip="Cancel editing" 
-                            [appearance]="'stroked'"
-                            (click)="cancelEditing(formDirective)"
-                        >
-                            Cancel
-                        </app-button>
-                        <app-button
-                            type="submit"
-                            class="button__positive"
-                            appCustomTooltip="Save new item todo" 
-                            [disabled]="editItemForm.controls.name.invalid"
-                        >
-                            Save
-                        </app-button>
-                    </div>
-                </form>
-            }
+
+            <router-outlet></router-outlet>
         </section>
 
         <section>

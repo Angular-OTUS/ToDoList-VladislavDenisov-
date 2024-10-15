@@ -1,0 +1,13 @@
+.edit-item-form {
+    display: flex;
+    flex-direction: column;
+    flex: 1 0;
+    gap: 0.25rem;
+}
+
+.edit-item-form__button-group {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 0.25rem;
+}

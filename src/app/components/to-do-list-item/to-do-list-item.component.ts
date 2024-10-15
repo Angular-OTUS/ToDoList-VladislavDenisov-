@@ -17,13 +17,13 @@ export class ToDoListItemComponent {
     @Input() public isSelected = false;
     @Input() public isChecked = false;
 
-    @Output() public setSelectedItemIdEvent: EventEmitter<string> = new EventEmitter<string>();
+    @Output() public goToItemEvent: EventEmitter<string> = new EventEmitter<string>();
     @Output() public setIsEditingEvent: EventEmitter<boolean> = new EventEmitter<boolean>();
     @Output() public toggleItemStatusEvent: EventEmitter<string> = new EventEmitter<string>();
     @Output() public deleteItemEvent: EventEmitter<string> = new EventEmitter<string>();
 
-    public setSelectedItemId(id?: string) {
-        this.setSelectedItemIdEvent.emit(id);
+    public goToItem(id?: string) {
+        this.goToItemEvent.emit(id);
     }
 
     public setIsEditing(isEditing?: boolean) {
